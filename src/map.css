@@ -1,0 +1,45 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 80px);
+    grid-template-rows: repeat(5, 80px);
+    gap: 5px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.board button {
+    grid-template-columns: repeat(5, 7vw);
+    grid-template-rows: repeat(5, 7vw);
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+.board button:hover {
+    background-color: #222;
+}
+.Box {
+    width: 14vw;
+    height: 48.5vh;
+    border: 2px solid white;
+    gap: 5px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.Container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
