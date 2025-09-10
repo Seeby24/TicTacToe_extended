@@ -12,8 +12,8 @@ export default function Maintictactoe() {
     const [xwins,setXWins] = useState(0);
     const [ywins,setYWins] = useState(0);
     const [blockmode,setBlockmode] = useState(false)
-    const [moves,setMoves] = useState(0)
-
+    const [blockedFields,setBlockedFields] = useState([])
+    const [moveCount, setMoveCount]  = useState(0)
 
 // Mache Zug
     function Makemove(index) {
@@ -22,7 +22,11 @@ export default function Maintictactoe() {
             const newBoard = [...board];
             if(blockmode){
                 newBoard[index] = "🔒";
-                setBlockmode(false)
+                setBlockedFields(prev => [
+                    ...prev,
+                    { index: index, unlockTurn: moveCount + 3 }
+                ]);
+                setBlockmode(false);
                 const nextTurn = turn === "X" ? "O" : "X";
                 setTurn(nextTurn);
                 setText(`Spieler ${nextTurn} ist dran`);
@@ -33,7 +37,9 @@ export default function Maintictactoe() {
                 const nextTurn = turn === "X" ? "O" : "X";
                 setTurn(nextTurn);
                 setText(`Spieler ${nextTurn} ist dran`);
+                setMoveCount(prev => prev + 1);
             }
+
             setBoard(newBoard)
         }
     }
@@ -55,6 +61,7 @@ export default function Maintictactoe() {
             const [a, b, c, d] = line; //Destructuring Assignment
             if (
                 Board[a] !== null &&
+                Board[a] !== "🔒" &&
                 Board[a] === Board[b] &&
                 Board[b] === Board[c] &&
                 Board[c] === Board[d]
@@ -147,22 +154,34 @@ export default function Maintictactoe() {
 
 // Entferne Schlösser
     useEffect(() => {
-        if(){
+        if(blockedFields.length === 0) return;
 
+        const toUnlock = blockedFields.filter(f => f.unlockTurn <= moveCount);
+
+        if(toUnlock.length > 0){
+            const newBoard = [...board];
+
+            toUnlock.forEach(f => {
+                newBoard[f.index] = null;
+            });
+
+            setBoard(newBoard);
+
+            setBlockedFields(prev => prev.filter(f => f.unlockTurn > moveCount));
         }
-    }, [blockmode]);
+    }, [moveCount]);
+
+
     return (
         <>
             <h1>TicTacToe</h1>
             <div className="Container">
+
+                {/* Links: Verlauf */}
                 <div className="Box">
                     <h2>Verlauf</h2>
-                    <div>
-                        Spieler 1: {xwins}
-                    </div>
-                    <div>
-                        Spieler 2: {ywins}
-                    </div>
+                    <div>Spieler 1: {xwins}</div>
+                    <div>Spieler 2: {ywins}</div>
                     <div>
                         {history.length === 0 ? "Noch kein Spiel beendet" : (
                             <ul>
@@ -174,15 +193,13 @@ export default function Maintictactoe() {
                             </ul>
                         )}
                     </div>
-
                     <div>
                         <button className="reset-button" onClick={Reset}>Reset</button>
                     </div>
-                    <div>
-                        {text}
-                    </div>
-
+                    <div>{text}</div>
                 </div>
+
+                {/* Mitte: Spielfeld */}
                 <div className="board">
                     {board.map((cell, index) => (
                         <Gamemap
@@ -193,10 +210,19 @@ export default function Maintictactoe() {
                     ))}
                 </div>
 
-                <div>
-                    <Cards setBlockmode={setBlockmode}/>
+                {/* Rechts: Karten X und O */}
+                <div className="RightSide">
+                    <div className="CardSlot">
+                        <h3>Karten X</h3>
+                        <Cards setBlockmode={setBlockmode}/>
+                    </div>
+                    <div className="CardSlot">
+                        <h3>Karten O</h3>
+
+                    </div>
                 </div>
+
             </div>
         </>
-    )
+    );
 }
