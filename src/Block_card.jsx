@@ -1,4 +1,4 @@
-export default function Cards({setBlockmode}){
+export default function Block_card({setBlockmode}){
 
     return(
         <div className="Card">

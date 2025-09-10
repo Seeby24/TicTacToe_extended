@@ -1,6 +1,8 @@
 import Gamemap from "./gamemap.jsx";
 import {useEffect, useState} from "react";
-import Cards from "./Cards.jsx";
+import Block_card from "./Block_card.jsx";
+import Delete_move from "./Delete_move.jsx";
+import Change_value from "./Change_value.jsx";
 
 export default function Maintictactoe() {
     const size = 5;
@@ -11,14 +13,16 @@ export default function Maintictactoe() {
     const [history,setHistory] = useState([]);
     const [xwins,setXWins] = useState(0);
     const [ywins,setYWins] = useState(0);
-    const [blockmode,setBlockmode] = useState(false)
+    const [blockmode,setBlockmode] = useState(false);
+    const [deletemode,setDeleteMode] = useState(false);
+    const [ChangeValue,setChangeValue] = useState(false);
     const [blockedFields,setBlockedFields] = useState([])
     const [moveCount, setMoveCount]  = useState(0)
 
 // Mache Zug
     function Makemove(index) {
         if (gameOver === false) {
-            if (board[index] || board[index] === "🔒") return;
+            if (!deletemode && !ChangeValue && board[index] || board[index] === "🔒") return;
             const newBoard = [...board];
             if(blockmode){
                 newBoard[index] = "🔒";
@@ -27,6 +31,28 @@ export default function Maintictactoe() {
                     { index: index, unlockTurn: moveCount + 3 }
                 ]);
                 setBlockmode(false);
+                const nextTurn = turn === "X" ? "O" : "X";
+                setTurn(nextTurn);
+                setText(`Spieler ${nextTurn} ist dran`);
+            }
+            else if (deletemode){
+                newBoard[index] = null
+                setDeleteMode(false)
+                const nextTurn = turn === "X" ? "O" : "X";
+                setTurn(nextTurn);
+                setText(`Spieler ${nextTurn} ist dran`);
+            }
+            else if (ChangeValue){
+                if(newBoard[index] === "X" ){
+                    newBoard[index] = "O";
+                }
+                else if(newBoard[index] === "O"){
+                    newBoard[index] = "X";
+                }
+                else {
+                    newBoard[index] = null;
+                }
+                setChangeValue(false);
                 const nextTurn = turn === "X" ? "O" : "X";
                 setTurn(nextTurn);
                 setText(`Spieler ${nextTurn} ist dran`);
@@ -177,7 +203,6 @@ export default function Maintictactoe() {
             <h1>TicTacToe</h1>
             <div className="Container">
 
-                {/* Links: Verlauf */}
                 <div className="Box">
                     <h2>Verlauf</h2>
                     <div>Spieler 1: {xwins}</div>
@@ -199,7 +224,7 @@ export default function Maintictactoe() {
                     <div>{text}</div>
                 </div>
 
-                {/* Mitte: Spielfeld */}
+
                 <div className="board">
                     {board.map((cell, index) => (
                         <Gamemap
@@ -210,14 +235,22 @@ export default function Maintictactoe() {
                     ))}
                 </div>
 
-                {/* Rechts: Karten X und O */}
+
                 <div className="RightSide">
                     <div className="CardSlot">
                         <h3>Karten X</h3>
-                        <Cards setBlockmode={setBlockmode}/>
+                        <div>
+                            <Block_card setBlockmode={setBlockmode}/>
+                        </div>
                     </div>
                     <div className="CardSlot">
                         <h3>Karten O</h3>
+                        <div>
+                           <Delete_move setDeleteMode={setDeleteMode}/>
+                        </div>
+                        <div>
+                            <Change_value setChangeValue={setChangeValue}/>
+                        </div>
 
                     </div>
                 </div>
