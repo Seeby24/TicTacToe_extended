@@ -69,6 +69,18 @@
     transform: scale(1.05);
 }
 
+.board button:disabled {
+    background-color: #555;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.Card button:disabled {
+    background-color: #333;
+    color: #888;
+    cursor: not-allowed;
+}
+
 
 .Box {
     width: 14vw;
@@ -85,3 +97,4 @@
     justify-content: center;
     gap: 20px;
 }
+
