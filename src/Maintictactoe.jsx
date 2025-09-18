@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import Block_card from "./Block_card.jsx";
 import Delete_move from "./Delete_move.jsx";
 import Change_value from "./Change_value.jsx";
+import Joker_card from "./Joker_card.jsx";
 
 export default function Maintictactoe() {
     const size = 5;
@@ -15,6 +16,7 @@ export default function Maintictactoe() {
     const [ywins,setYWins] = useState(0);
     const [blockmode,setBlockmode] = useState(false);
     const [deletemode,setDeleteMode] = useState(false);
+    const [jokerMode,setJokerMode] = useState(false);
     const [ChangeValue,setChangeValue] = useState(false);
     const [blockedFields,setBlockedFields] = useState([])
     const [moveCount, setMoveCount]  = useState(0)
@@ -22,7 +24,7 @@ export default function Maintictactoe() {
 // Mache Zug
     function Makemove(index) {
         if (gameOver === false) {
-            if (!deletemode && !ChangeValue && board[index] || board[index] === "🔒") return;
+            if (!deletemode && !ChangeValue && board[index] || board[index] === "🔒" || board[index] === "🃏") return;
             const newBoard = [...board];
             if(blockmode){
                 newBoard[index] = "🔒";
@@ -53,6 +55,13 @@ export default function Maintictactoe() {
                     newBoard[index] = null;
                 }
                 setChangeValue(false);
+                const nextTurn = turn === "X" ? "O" : "X";
+                setTurn(nextTurn);
+                setText(`Spieler ${nextTurn} ist dran`);
+            }
+            else if (jokerMode){
+                newBoard[index] = "🃏"
+                setJokerMode(false)
                 const nextTurn = turn === "X" ? "O" : "X";
                 setTurn(nextTurn);
                 setText(`Spieler ${nextTurn} ist dran`);
@@ -88,9 +97,9 @@ export default function Maintictactoe() {
             if (
                 Board[a] !== null &&
                 Board[a] !== "🔒" &&
-                Board[a] === Board[b] &&
-                Board[b] === Board[c] &&
-                Board[c] === Board[d]
+                (Board[a] === Board[b] || Board[b] === "🃏") &&
+                (Board[a] === Board[c] || Board[c] === "🃏") &&
+                (Board[a] === Board[d] || Board[d] === "🃏")
             ) {
                 return Board[a];
             }
@@ -241,6 +250,9 @@ export default function Maintictactoe() {
                         <h3>Karten X</h3>
                         <div>
                             <Block_card setBlockmode={setBlockmode}/>
+                        </div>
+                        <div>
+                            <Joker_card setJokerMode={setJokerMode}/>
                         </div>
                     </div>
                     <div className="CardSlot">
